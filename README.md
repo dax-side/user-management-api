@@ -15,28 +15,6 @@ Before running this project, make sure you have:
 - [Node.js](https://nodejs.org/) installed (v14 or higher recommended).
 - [npm](https://www.npmjs.com/) (comes with Node.js).
 
-## Setup
-1. Clone the repository:
-   ```bash
-   git clone <repository-url>
-   cd <repository-folder>
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Run the server:
-   ```bash
-   node index.js
-   ```
-
-4. Access the API at:
-   ```
-   http://localhost:3000
-   ```
-
 ## Endpoints
 Here are the available API endpoints:
 
