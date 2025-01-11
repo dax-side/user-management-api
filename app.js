@@ -1,35 +1,64 @@
-const express = require('express');
-const https = require('https');
-const app = express();
+const express = require('express')
+const app = express()
+const { v4: uuidv4 } = require('uuid')
 
-app.use(express.urlencoded())
+let users = []
 
-app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/index.html')
+app.use(express.json())
+//Get all users
+app.get('/users', (req, res) => {
+    res.send(users)
+})
+//Create a user
+
+app.post('/users', (req, res) => {
+    const createduser = req.body
+    const userId = uuidv4();
+    const userWithId = { ...createduser, id: userId }
+    users.push(userWithId)
+    res.send(`User with name ${createduser.firstName} added to the database`)
 })
 
-app.post('/', (req, res) => {
-    const query = req.body.cityName;
-    const units = "metric"
-    const apikey = "1a3649510866258206ea21cf29567c8c"
-    const url = "https://api.openweathermap.org/data/2.5/weather?q=" + query + "&appid=" + apikey + "&units=" + units;
-    https.get(url, (response) => {
+//Getting one user with id
 
-        response.on('data', (data) => {
-            const weatherData = JSON.parse(data);
-            const weatherDesc = weatherData.weather[0].description;
-            const temp = weatherData.main.temp
-            const weatherIcon = weatherData.weather[0].icon;
-            const imgUrl = "http://openweathermap.org/img/wn/" + weatherIcon + "@2x.png"
+app.get('/users/:id/', (req, res) => {
+    // console.log(req.params.id)
+    const { id } = req.params;
 
-            res.write('<p>The temperature of '+query+' is '+temp+'</p>')
-            res.write('<p>The weather description of '+query+' is '+weatherDesc+'</p>')
-            res.write("<img src=" + imgUrl + ">")
-            res.send()
-        })
-    })
+    const foundUser = users.find((user) => user.id === id)
+    res.send(foundUser)
 })
+// Delete users with data
+app.delete('/users/:id', (req, res) => {
+    const { id } = req.params;
+
+    users = users.filter((user) => user.id !== id)
+
+    res.send(`The ${id} specified was succesfully deleted`)
+})
+
+app.patch('/users/:id', (req, res) => {
+    const { id } = req.params;
+
+    const user = users.find((user) => user.id === id)
+    const { firstName, lastName, age } = req.body;
+
+    if (firstName) {
+        user.firstName = firstName;
+    }
+    if (lastName) {
+        user.lastName = lastName;
+    }
+    if (age) {
+        user.age = age;
+    }
+
+    
+
+    res.send(`The user with ${id} is updated succesfully`)
+})
+
 
 app.listen(3000, (req, res) => {
-    console.log('Server is running')
+    console.log('Server is listening on port 3000')
 })
